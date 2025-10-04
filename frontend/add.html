@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Добавить мигранта</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Добавить мигранта</h1>
+  <form id="migrant-form">
+    <input type="text" name="full_name" placeholder="ФИО" required><br>
+    <input type="text" name="passport" placeholder="Паспорт" required><br>
+    <input type="text" name="nationality" placeholder="Гражданство" required><br>
+    <select name="stay_type" id="stay-type-select" required>
+      <option value="">Тип пребывания</option>
+      <option value="visa">По визе</option>
+      <option value="visa-free">Без визы</option>
+    </select><br>
+    <label>Дата въезда:</label>
+    <input type="date" name="entry_date" required><br>
+    <div id="visa-fields" style="display:none">
+      <label>Дата окончания визы:</label>
+      <input type="date" name="visa_expiry" required><br>
+    </div>
+    <div id="vf-fields" style="display:none">
+      <label>Разрешено дней:</label>
+      <input type="number" name="allowed_days" min="1" required><br>
+    </div>
+    <button type="submit">Добавить</button>
+  </form>
+  <script>
+    const form = document.getElementById('migrant-form');
+    const stayTypeSelect = document.getElementById('stay-type-select');
+    const visaFields = document.getElementById('visa-fields');
+    const vfFields = document.getElementById('vf-fields');
+
+    stayTypeSelect.addEventListener('change', () => {
+      visaFields.style.display = stayTypeSelect.value === 'visa' ? 'block' : 'none';
+      vfFields.style.display = stayTypeSelect.value === 'visa-free' ? 'block' : 'none';
+      
+      // Установка обязательных полей
+      document.querySelector('[name="visa_expiry"]').required = stayTypeSelect.value === 'visa';
+      document.querySelector('[name="allowed_days"]').required = stayTypeSelect.value === 'visa-free';
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(form);
+      const data = {
+        full_name: formData.get('full_name'),
+        passport: formData.get('passport'),
+        nationality: formData.get('nationality'),
+        stay_type: formData.get('stay_type'),
+        entry_date: formData.get('entry_date'),
+        visa_expiry: formData.get('visa_expiry'),
+        allowed_days: formData.get('allowed_days') ? parseInt(formData.get('allowed_days')) : null
+      };
+
+      try {
+        const res = await fetch(`/api/migrants`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        
+        if (res.ok) {
+          location.href = 'index.html';
+        } else {
+          const error = await res.json();
+          alert(`Ошибка: ${error.error}`);
+        }
+      } catch (err) {
+        console.error('Ошибка:', err);
+        alert('Сервер не отвечает');
+      }
+    });
+  </script>
+</body>
+</html>

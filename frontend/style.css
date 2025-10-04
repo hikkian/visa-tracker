@@ -1,0 +1,25 @@
+body {
+  font-family: sans-serif;
+  margin: 2rem;
+}
+h1 {
+  margin-bottom: 1rem;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+tr.valid {
+  background-color: #d4edda;
+}
+tr.expired {
+  background-color: #f8d7da;
+}
+nav a {
+  margin-right: 1rem;
+}
